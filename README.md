@@ -8,11 +8,10 @@ This project was developed as part of the NIT3004 Capstone Unit at Victoria Univ
 
 ## Project Members – Group 2 (NIT3004)
 
-- Kipa Shakya – Backend, ML Model Integration
-- Eliza Tamrakar – Frontend Development
-- Palak Rani – Authentication & UI Logic
-- Enu Rai – Reporting Features & Admin Tools
-
+- Kipa Shakya 
+- Eliza Tamrakar 
+- Palak Rani
+- Enu Rai 
 ---
 
 ## Features
