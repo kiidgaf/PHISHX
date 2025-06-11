@@ -31,20 +31,23 @@ def register():
         country=data["country"],
         email=data["email"],
         password=hashed_pw,
+        is_verified=False,
+        verification_token=str(uuid.uuid4()),
+        token_expiration=datetime.utcnow() + timedelta(hours=24),
         )
     db.session.add(user)
     db.session.commit()
 
     # Send confirmation email
-    # verification_url = f"http://localhost:3000/verify-email/{user.verification_token}"
-    msg = Message(subject="Welcome to PhishX!",
+    verification_url = f"http://localhost:3000/verify-email/{user.verification_token}"
+    msg = Message(subject="Verify your email",
                 #   sender="no-reply@phishx.com",
                   recipients=[user.email],
-                  body=f"Hello {first_name} {last_name},\n\nYour PhishX account has been successfully created.\nYou can now log in and start using the platform.\n\nRegards,\nPhishX Team")
+                  body=f"Hello {first_name} {last_name},\n\nYour PhishX account has been successfully created. Click the link to verify your email: {verification_url}\n\nRegards,\nPhishX Team")
 
     mail.send(msg)
 
-    return jsonify({"message": "Registration successful!"}), 201
+    return jsonify({"message": "Registration successful! Please verify your email."}), 201
 
 @bp.route('/login', methods=['POST'])
 def login():
@@ -58,9 +61,27 @@ def login():
     user = User.query.filter_by(email=email).first()
 
     if user and bcrypt.check_password_hash(user.password, password):
+        if not user.is_verified:
+            return jsonify({"error": "Please verify your email before logging in."}), 403
+        
         access_token = create_access_token(identity=str(user.id))
         return jsonify({"token": access_token, "user": {"username": user.username, "role": user.role}})
     return jsonify({"error": "Invalid credentials"}), 401
 
-    
+@bp.route('/verify-email/<token>', methods=['GET'])
+def verify_email(token):
+    user = User.query.filter_by(verification_token=token).first()
+    if not user:
+        return jsonify({"error": "Invalid or expired token"}), 400
+    if user.is_verified:
+        return jsonify({"message": "Account already verified."}), 200
+    if datetime.utcnow() > user.token_expiration:
+        return jsonify({"error": "Verification token expired."}), 400
+
+    user.is_verified = True
+    user.verification_token = None
+    user.token_expiration = None
+    db.session.commit()
+    return jsonify({"message": "Email verified successfully!"}), 200
+   
 
