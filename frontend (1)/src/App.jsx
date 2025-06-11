@@ -8,6 +8,7 @@ import AdminPanel from "./pages/AdminPanel";
 import ReportIssue from "./pages/ReportIssue";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
+import VerifyEmail from "./pages/VerifyEmail";
 
 export default function App() {
   return (
@@ -26,6 +27,7 @@ export default function App() {
         <Route path="/report" element={<ProtectedRoute>
       <ReportIssue />
     </ProtectedRoute>} />
+    <Route path="/verify-email/:token" element={<VerifyEmail/>} />
       </Routes>
     </Router>
   );
