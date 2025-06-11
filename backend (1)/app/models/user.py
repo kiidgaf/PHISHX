@@ -10,6 +10,9 @@ class User(db.Model):
     password = db.Column(db.String(128), nullable=False)
     username = db.Column(db.String(64), unique=True)  
     role = db.Column(db.String(20), default='user')
+    is_verified = db.Column(db.Boolean, default=False)
+    verification_token = db.Column(db.String(64), unique=True, nullable=True)
+    token_expiration = db.Column(db.DateTime, nullable=True)
 
     def __repr__(self):
         return f"<User {self.email}>"
