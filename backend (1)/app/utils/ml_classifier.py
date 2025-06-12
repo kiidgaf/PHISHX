@@ -274,7 +274,7 @@ def extract_features(url):
         right_click(response),
         popupwindow(),
         iframe(response),
-        age_of_domain(domain_name),
+        0,
         dns,
         web_traffic(url),
         page_rank(),
